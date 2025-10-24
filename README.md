@@ -37,16 +37,56 @@ FieldTuner is a comprehensive configuration tool designed specifically for Battl
 - 🔧 **Developer Tools** - Type hints, centralized constants, and utility functions
 - ⚡ **Performance Optimizations** - Faster startup and better memory management
 
+## 🙏 Acknowledgments
+
+**Hans Yolo** - For the original idea
+
 ## 🚀 Quick Start
 
 ### 📦 **Download & Run (Recommended)**
 
-1. **Download** the latest release from [Releases](https://github.com/tomstetson/FieldTuner/releases)
-2. **Download** `FieldTuner-V1.0.exe` (~42MB)
+1. **Go to [Releases](https://github.com/tomstetson/FieldTuner/releases)**
+2. **Download** `FieldTuner-V1.1-Improved.exe` (~40.5MB)
 3. **Right-click** → "Run as administrator"
 4. **Start** configuring your Battlefield 6 settings!
 
 > **Note**: No installation required! The executable is completely portable.
+
+### 🎯 **System Requirements**
+
+- **OS:** Windows 10/11 (64-bit)
+- **RAM:** 4GB minimum, 8GB recommended
+- **Storage:** 50MB free space
+- **Battlefield 6:** Must be installed and run at least once
+
+### 🎮 **How to Use**
+
+1. **Launch FieldTuner** (run as administrator)
+2. **Select your BF6 config file** (auto-detected)
+3. **Choose a preset** or customize settings
+4. **Click "Apply Changes"** to save (or use Ctrl+S)
+
+**Keyboard Shortcuts:**
+- `Ctrl+S` - Save/Apply changes
+- `F5` - Refresh settings
+- `Ctrl+B` - Create quick backup
+- `Ctrl+R` - Restore from backup
+
+### 🆘 **Troubleshooting**
+
+**"Config file not found"**
+- Make sure Battlefield 6 is installed
+- Run the game at least once to create config files
+- Check that config files exist in your Documents folder
+
+**"Permission denied"**
+- Run FieldTuner as administrator
+- Ensure you have administrator privileges
+
+**"Application won't start"**
+- Check Windows version compatibility
+- Use the portable executable version
+- Check antivirus software isn't blocking the executable
 
 ### 🔧 **From Source Code**
 
@@ -194,12 +234,6 @@ python -m pytest tests/ -v
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
-
-- **Nobody621** - For the original idea
-- **PyQt6** - For the excellent GUI framework
-- **Python Community** - For the amazing ecosystem
-- **Cursor** - For the incredible AI-powered development experience
 
 ---
 

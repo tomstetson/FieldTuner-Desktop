@@ -166,11 +166,11 @@ cython_debug/
 .vscode/
 
 # FieldTuner specific
-releases/
+# releases/  # Allow release executables
 temp/
 build/
 dist/
-*.exe
+# *.exe  # Allow release executables
 *.bat
 *.log
 
