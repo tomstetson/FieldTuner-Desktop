@@ -28,6 +28,15 @@ FieldTuner is a comprehensive configuration tool designed specifically for Battl
 - 🐛 **Debug Tools** - Real-time logging and troubleshooting
 - 🚀 **Portable Design** - No installation required, runs anywhere
 
+### 🆕 **V1.1 Enhanced Features**
+
+- 📊 **Progress Indicators** - Visual feedback during configuration changes
+- ⌨️ **Keyboard Shortcuts** - Ctrl+S (save), F5 (refresh), Ctrl+B (backup), Ctrl+R (restore)
+- 🛡️ **Enhanced Error Handling** - Robust error recovery and clear user feedback
+- 🧪 **Comprehensive Testing** - 24 new test cases with 100% pass rate
+- 🔧 **Developer Tools** - Type hints, centralized constants, and utility functions
+- ⚡ **Performance Optimizations** - Faster startup and better memory management
+
 ## 🚀 Quick Start
 
 ### 📦 **Download & Run (Recommended)**
@@ -178,6 +187,7 @@ python -m pytest tests/ -v
 - ✅ **Portable Build** - Self-contained executable ready
 - ✅ **Documentation** - Comprehensive guides
 - ✅ **Testing** - Test coverage with automated testing
+- ✅ **V1.1 Enhanced** - Latest release with improvements
 - 🔄 **V1.0** - Initial release available
 
 ## 📄 License

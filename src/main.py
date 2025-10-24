@@ -12,6 +12,7 @@ import json
 import subprocess
 from pathlib import Path
 from datetime import datetime
+from typing import Dict, List, Any, Optional, Tuple, Union
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
     QTabWidget, QLabel, QPushButton, QSlider, QCheckBox, QComboBox,
@@ -28,57 +29,48 @@ from PyQt6.QtGui import QFont, QIcon, QPalette, QColor, QTextCursor, QPixmap, QP
 # Import debug system
 from debug import debug_logger, log_info, log_warning, log_error, log_debug, get_debug_logger
 
-# Import JSON for pinned settings persistence
-import json
+# Import constants and utilities
+from constants import AppConstants
+from utils import safe_file_operation, safe_json_load, safe_json_save, validate_setting_value, sanitize_setting_value
 
 
 class FavoritesManager:
     """Manages favorite settings state persistence."""
     
-    def __init__(self):
-        self.favorites_file = Path.home() / "AppData" / "Roaming" / "FieldTuner" / "favorites.json"
-        self.favorite_settings = self.load_favorites()
+    def __init__(self) -> None:
+        self.favorites_file = AppConstants.FAVORITES_FILE
+        self.favorite_settings: Dict[str, Any] = self.load_favorites()
     
-    def load_favorites(self):
+    def load_favorites(self) -> Dict[str, Any]:
         """Load favorite settings from file."""
-        try:
-            if self.favorites_file.exists():
-                with open(self.favorites_file, 'r') as f:
-                    data = json.load(f)
-                    log_info(f"Loaded {len(data)} favorite settings", "FAVORITES")
-                    return data
-        except Exception as e:
-            log_error(f"Failed to load favorites: {str(e)}", "FAVORITES", e)
-        return {}
+        return safe_json_load(self.favorites_file, {})
     
-    def save_favorites(self):
+    def save_favorites(self) -> bool:
         """Save favorite settings to file."""
-        try:
-            self.favorites_file.parent.mkdir(parents=True, exist_ok=True)
-            with open(self.favorites_file, 'w') as f:
-                json.dump(self.favorite_settings, f, indent=2)
-            log_info(f"Saved {len(self.favorite_settings)} favorite settings", "FAVORITES")
-        except Exception as e:
-            log_error(f"Failed to save favorites: {str(e)}", "FAVORITES", e)
+        return safe_json_save(self.favorites_file, self.favorite_settings)
     
-    def is_favorite(self, setting_key):
+    def is_favorite(self, setting_key: str) -> bool:
         """Check if a setting is favorited."""
         return setting_key in self.favorite_settings
     
-    def add_favorite(self, setting_key, setting_data):
+    def add_favorite(self, setting_key: str, setting_data: Dict[str, Any]) -> bool:
         """Add a setting to favorites."""
         self.favorite_settings[setting_key] = setting_data
-        self.save_favorites()
-        log_info(f"Added to favorites: {setting_key}", "FAVORITES")
+        if self.save_favorites():
+            log_info(f"Added to favorites: {setting_key}", "FAVORITES")
+            return True
+        return False
     
-    def remove_favorite(self, setting_key):
+    def remove_favorite(self, setting_key: str) -> bool:
         """Remove a setting from favorites."""
         if setting_key in self.favorite_settings:
             del self.favorite_settings[setting_key]
-            self.save_favorites()
-            log_info(f"Removed from favorites: {setting_key}", "FAVORITES")
+            if self.save_favorites():
+                log_info(f"Removed from favorites: {setting_key}", "FAVORITES")
+                return True
+        return False
     
-    def get_favorites(self):
+    def get_favorites(self) -> Dict[str, Any]:
         """Get all favorite settings."""
         return self.favorite_settings.copy()
 
@@ -166,28 +158,19 @@ class ProfessionalToggleSwitch(QWidget):
 class ConfigManager:
     """Enhanced config manager with debugging."""
     
-    def __init__(self):
+    def __init__(self) -> None:
         log_info("Initializing ConfigManager", "CONFIG")
-        self.config_path = None
-        self.config_data = {}
-        self.original_data = ""
-        self.backup_path = None
+        self.config_path: Optional[Path] = None
+        self.config_data: Dict[str, Any] = {}
+        self.original_data: bytes = b""
+        self.backup_path: Optional[Path] = None
         
-        # Common Battlefield 6 config paths
-        self.CONFIG_PATHS = [
-            Path.home() / "Documents" / "Battlefield 6" / "settings" / "steam" / "PROFSAVE_profile",
-            Path.home() / "Documents" / "Battlefield 6" / "settings" / "PROFSAVE_profile",
-            Path.home() / "OneDrive" / "Documents" / "Battlefield 6" / "settings" / "steam" / "PROFSAVE_profile",
-            Path.home() / "OneDrive" / "Documents" / "Battlefield 6" / "settings" / "PROFSAVE_profile"
-        ]
+        # Use constants for config paths
+        self.CONFIG_PATHS = AppConstants.BF6_CONFIG_PATHS
         
         # Create backup directory with error handling
-        try:
-            self.BACKUP_DIR = Path.home() / "AppData" / "Roaming" / "FieldTuner" / "backups"
-            self.BACKUP_DIR.mkdir(parents=True, exist_ok=True)
-            log_info(f"Backup directory created: {self.BACKUP_DIR}", "CONFIG")
-        except Exception as e:
-            log_error(f"Failed to create backup directory in AppData: {e}", "CONFIG")
+        self.BACKUP_DIR = AppConstants.BACKUP_DIR
+        if not safe_file_operation(self.BACKUP_DIR.mkdir, parents=True, exist_ok=True):
             # Fallback to current directory
             self.BACKUP_DIR = Path.cwd() / "backups"
             self.BACKUP_DIR.mkdir(parents=True, exist_ok=True)
@@ -2323,6 +2306,9 @@ class MainWindow(QMainWindow):
         # Create action buttons
         self.create_action_buttons()
         
+        # Setup keyboard shortcuts
+        self.setup_shortcuts()
+        
         log_info("FieldTuner MainWindow initialized successfully", "MAIN")
     
     def setup_ui(self):
@@ -2718,23 +2704,35 @@ class MainWindow(QMainWindow):
                 self.status_label.setText("❌ No Battlefield 6 config file found - Please check your game installation")
     
     def apply_changes(self):
-        """Apply configuration changes."""
+        """Apply configuration changes with progress indication."""
         log_info("Applying configuration changes", "MAIN")
         self.status_bar.showMessage("Applying changes...")
         
+        # Create progress bar
+        progress = QProgressBar()
+        progress.setRange(0, 100)
+        progress.setValue(0)
+        self.status_bar.addPermanentWidget(progress)
+        
         try:
-            # Save settings from all tabs
+            # Step 1: Save quick settings (25%)
+            progress.setValue(25)
             self.quick_tab.save_settings()
+            
+            # Step 2: Save graphics settings (50%)
+            progress.setValue(50)
             self.graphics_tab.save_settings()
             
-            # Save code view if it was modified
+            # Step 3: Save code view if modified (75%)
+            progress.setValue(75)
             if hasattr(self.code_tab, 'save_config'):
                 if not self.code_tab.save_config():
                     log_error("Failed to save code view changes", "MAIN")
                     QMessageBox.critical(self, "Error", "❌ Failed to save code view changes!")
                     return
             
-            # Save to file
+            # Step 4: Save to file (100%)
+            progress.setValue(100)
             if self.config_manager.save_config():
                 self.status_bar.showMessage("✅ Changes applied successfully!")
                 QMessageBox.information(self, "Success", "✅ Configuration changes have been applied successfully!")
@@ -2750,6 +2748,57 @@ class MainWindow(QMainWindow):
             self.status_bar.showMessage("❌ Error applying changes!")
             log_error(f"Error applying changes: {str(e)}", "MAIN", e)
             QMessageBox.critical(self, "Error", f"❌ Error applying changes: {str(e)}")
+        finally:
+            # Remove progress bar
+            self.status_bar.removeWidget(progress)
+    
+    def setup_shortcuts(self):
+        """Setup keyboard shortcuts for common actions."""
+        from PyQt6.QtGui import QShortcut, QKeySequence
+        
+        # Ctrl+S to save/apply changes
+        save_shortcut = QShortcut(QKeySequence.StandardKey.Save, self)
+        save_shortcut.activated.connect(self.apply_changes)
+        
+        # Ctrl+Z to undo (if we implement undo functionality)
+        # undo_shortcut = QShortcut(QKeySequence.StandardKey.Undo, self)
+        # undo_shortcut.activated.connect(self.undo_last_change)
+        
+        # F5 to refresh settings
+        refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
+        refresh_shortcut.activated.connect(self.refresh_settings)
+        
+        # Ctrl+B to create backup
+        backup_shortcut = QShortcut(QKeySequence("Ctrl+B"), self)
+        backup_shortcut.activated.connect(self.create_quick_backup)
+        
+        # Ctrl+R to restore from backup
+        restore_shortcut = QShortcut(QKeySequence("Ctrl+R"), self)
+        restore_shortcut.activated.connect(self.quick_restore)
+        
+        log_info("Keyboard shortcuts configured", "MAIN")
+    
+    def refresh_settings(self):
+        """Refresh settings from config file."""
+        log_info("Refreshing settings", "MAIN")
+        if self.config_manager.load_config():
+            # Reload all tabs
+            if hasattr(self, 'quick_tab'):
+                self.quick_tab.load_settings()
+            if hasattr(self, 'graphics_tab'):
+                self.graphics_tab.load_settings()
+            self.status_bar.showMessage("✅ Settings refreshed successfully!")
+        else:
+            self.status_bar.showMessage("❌ Failed to refresh settings!")
+    
+    def create_quick_backup(self):
+        """Create a quick backup."""
+        log_info("Creating quick backup", "MAIN")
+        backup_path = self.config_manager._create_backup("quick_backup")
+        if backup_path:
+            self.status_bar.showMessage(f"✅ Quick backup created: {backup_path.name}")
+        else:
+            self.status_bar.showMessage("❌ Failed to create backup!")
     
     def quick_restore(self):
         """Quick restore from the most recent backup."""
