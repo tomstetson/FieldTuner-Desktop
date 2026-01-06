@@ -1,0 +1,584 @@
+/* Google Fonts - Must be first */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FIELDTUNER - TACTICAL COMMAND CENTER DESIGN SYSTEM
+   A military-tech aesthetic for the battlefield config editor
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   CSS Custom Properties
+   ───────────────────────────────────────────────────────────────────────────── */
+:root {
+  /* Primary Colors */
+  --color-primary: #ff6b35;
+  --color-primary-dim: #ff6b3540;
+  --color-primary-glow: #ff6b3520;
+
+  /* Accent Colors */
+  --color-accent: #00f0ff;
+  --color-accent-dim: #00f0ff30;
+  --color-accent-glow: #00f0ff15;
+
+  /* Status Colors */
+  --color-success: #00ff88;
+  --color-warning: #ffc107;
+  --color-danger: #ff3366;
+
+  /* Background Layers */
+  --bg-base: #0a0a0c;
+  --bg-surface: #111115;
+  --bg-elevated: #18181d;
+  --bg-overlay: #1e1e24;
+
+  /* Border Colors */
+  --border-dim: #252530;
+  --border-subtle: #303040;
+  --border-active: #404055;
+
+  /* Text Colors */
+  --text-primary: #f0f0f5;
+  --text-secondary: #a0a0b0;
+  --text-tertiary: #606070;
+  --text-muted: #404050;
+
+  /* Typography */
+  --font-display: 'Orbitron', monospace;
+  --font-body: 'Rajdhani', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Spacing */
+  --corner-cut: 12px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Base Styles
+   ───────────────────────────────────────────────────────────────────────────── */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  overflow-x: hidden;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Background Effects
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Scan Lines Overlay */
+.scan-lines::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+  z-index: 9999;
+}
+
+/* Grid Background */
+.tactical-grid {
+  background-image:
+    linear-gradient(var(--border-dim) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-dim) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: center center;
+}
+
+/* Noise Texture */
+.noise-texture::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  opacity: 0.02;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  z-index: 9998;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Corner Cut Cards (Tactical Style)
+   ───────────────────────────────────────────────────────────────────────────── */
+.tactical-card {
+  position: relative;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--corner-cut)) 0,
+    100% var(--corner-cut),
+    100% 100%,
+    var(--corner-cut) 100%,
+    0 calc(100% - var(--corner-cut))
+  );
+}
+
+.tactical-card::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  right: calc(var(--corner-cut) - 1px);
+  width: calc(var(--corner-cut) * 1.414);
+  height: 1px;
+  background: var(--border-dim);
+  transform: rotate(45deg);
+  transform-origin: top right;
+}
+
+.tactical-card::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: calc(var(--corner-cut) - 1px);
+  width: calc(var(--corner-cut) * 1.414);
+  height: 1px;
+  background: var(--border-dim);
+  transform: rotate(45deg);
+  transform-origin: bottom left;
+}
+
+/* Small Corner Cut Variant */
+.tactical-card-sm {
+  --corner-cut: 8px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Glowing Border Effects
+   ───────────────────────────────────────────────────────────────────────────── */
+.glow-border {
+  position: relative;
+}
+
+.glow-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(135deg, var(--color-primary), transparent 50%, var(--color-accent));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+  filter: blur(8px);
+}
+
+.glow-border:hover::before {
+  opacity: 0.5;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Status Indicators
+   ───────────────────────────────────────────────────────────────────────────── */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.status-dot--active {
+  background: var(--color-success);
+  box-shadow: 0 0 10px var(--color-success), 0 0 20px var(--color-success);
+}
+
+.status-dot--warning {
+  background: var(--color-warning);
+  box-shadow: 0 0 10px var(--color-warning);
+}
+
+.status-dot--danger {
+  background: var(--color-danger);
+  box-shadow: 0 0 10px var(--color-danger);
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Button Styles
+   ───────────────────────────────────────────────────────────────────────────── */
+.btn-tactical {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  clip-path: polygon(
+    0 0,
+    calc(100% - 8px) 0,
+    100% 8px,
+    100% 100%,
+    8px 100%,
+    0 calc(100% - 8px)
+  );
+}
+
+.btn-tactical--primary {
+  background: linear-gradient(135deg, var(--color-primary), #ff8855);
+  color: #000;
+}
+
+.btn-tactical--primary:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 0 30px var(--color-primary-dim);
+}
+
+.btn-tactical--secondary {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+}
+
+.btn-tactical--secondary:hover {
+  background: var(--bg-overlay);
+  border-color: var(--border-active);
+}
+
+.btn-tactical--accent {
+  background: linear-gradient(135deg, var(--color-accent), #00d4ff);
+  color: #000;
+}
+
+.btn-tactical--accent:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 0 30px var(--color-accent-dim);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Form Controls
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Toggle Switch */
+.toggle-switch {
+  position: relative;
+  width: 56px;
+  height: 28px;
+  background: var(--bg-overlay);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
+}
+
+.toggle-switch::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  background: var(--text-tertiary);
+  transition: all 0.3s ease;
+  clip-path: polygon(2px 0, 100% 0, 100% calc(100% - 2px), calc(100% - 2px) 100%, 0 100%, 0 2px);
+}
+
+.toggle-switch--active {
+  background: var(--color-primary-dim);
+  border-color: var(--color-primary);
+}
+
+.toggle-switch--active::before {
+  left: 31px;
+  background: var(--color-primary);
+  box-shadow: 0 0 10px var(--color-primary);
+}
+
+/* Slider */
+.tactical-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: var(--bg-overlay);
+  border: 1px solid var(--border-subtle);
+  outline: none;
+  cursor: pointer;
+}
+
+.tactical-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--color-primary);
+  border: 2px solid #fff;
+  cursor: pointer;
+  box-shadow: 0 0 15px var(--color-primary);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  transition: transform 0.2s ease;
+}
+
+.tactical-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.tactical-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: var(--color-primary);
+  border: 2px solid #fff;
+  cursor: pointer;
+  box-shadow: 0 0 15px var(--color-primary);
+}
+
+/* Select Dropdown */
+.tactical-select {
+  appearance: none;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  padding: 0.625rem 2.5rem 0.625rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23ff6b35'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+}
+
+.tactical-select:hover {
+  border-color: var(--color-primary);
+}
+
+.tactical-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-glow);
+}
+
+/* Text Input */
+.tactical-input {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  padding: 0.75rem 1rem;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  transition: all 0.2s ease;
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+}
+
+.tactical-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.tactical-input:hover {
+  border-color: var(--border-active);
+}
+
+.tactical-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-accent-glow);
+}
+
+/* Number Input */
+.tactical-number {
+  background: var(--bg-overlay);
+  border: 1px solid var(--border-subtle);
+  color: var(--color-primary);
+  padding: 0.5rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: center;
+  width: 80px;
+  transition: all 0.2s ease;
+}
+
+.tactical-number:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 10px var(--color-primary-glow);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Typography
+   ───────────────────────────────────────────────────────────────────────────── */
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tracking-tactical {
+  letter-spacing: 0.15em;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Animations
+   ───────────────────────────────────────────────────────────────────────────── */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 5px var(--color-primary), 0 0 10px var(--color-primary-dim);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--color-primary), 0 0 40px var(--color-primary-dim);
+  }
+}
+
+@keyframes border-scan {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 200% 0%;
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.5s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* Staggered animations */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.3s; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Utility Classes
+   ───────────────────────────────────────────────────────────────────────────── */
+.bg-base { background-color: var(--bg-base); }
+.bg-surface { background-color: var(--bg-surface); }
+.bg-elevated { background-color: var(--bg-elevated); }
+.bg-overlay { background-color: var(--bg-overlay); }
+
+.border-dim { border-color: var(--border-dim); }
+.border-subtle { border-color: var(--border-subtle); }
+.border-active { border-color: var(--border-active); }
+
+.text-primary-color { color: var(--text-primary); }
+.text-secondary-color { color: var(--text-secondary); }
+.text-tertiary-color { color: var(--text-tertiary); }
+.text-muted-color { color: var(--text-muted); }
+
+.text-accent { color: var(--color-accent); }
+.text-primary-theme { color: var(--color-primary); }
+.text-success { color: var(--color-success); }
+.text-warning { color: var(--color-warning); }
+.text-danger { color: var(--color-danger); }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Scrollbar Styling
+   ───────────────────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-base);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Selection Styling
+   ───────────────────────────────────────────────────────────────────────────── */
+::selection {
+  background: var(--color-primary);
+  color: #000;
+}
+
+::-moz-selection {
+  background: var(--color-primary);
+  color: #000;
+}

@@ -37,6 +37,18 @@ FieldTuner is a comprehensive configuration tool designed specifically for Battl
 - 🔧 **Developer Tools** - Type hints, centralized constants, and utility functions
 - ⚡ **Performance Optimizations** - Faster startup and better memory management
 
+### 🌐 **FieldTuner Web** (NEW!)
+
+A browser-based version with a tactical command center UI:
+
+- 🖥️ **No Installation** - Works in any modern browser
+- ⚡ **150+ Settings** - Complete settings database
+- 🎯 **5 Pro Presets** - Quick optimization profiles
+- 🔍 **Real-time Search** - Find settings instantly
+- 📊 **Change Tracking** - Visual diff of modifications
+
+See [`fieldtuner-web/`](fieldtuner-web/) for details or [try it online](https://github.com/tomstetson/FieldTuner/releases).
+
 ## 🙏 Acknowledgments
 
 **Hans Yolo** - For the original idea
